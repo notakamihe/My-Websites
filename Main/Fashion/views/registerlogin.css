@@ -1,0 +1,247 @@
+@font-face {
+    font-family: "Averta Demo PE";
+    src: url("../../fonts/Averta.ttf");
+}
+
+@font-face {
+    font-family: "AlkesDemo-SemiBold";
+    src: url("../../fonts/AlkesDemo-Semibold.ttf");
+}
+
+:root {
+    --primary-color: #0059ff;
+    
+    --primary-font: "Alkes", serif;
+    --secondary-font: "Averta Bold Italic", sans-serif;
+    --tertiary-font: "Averta", sans-serif;
+
+    --statement-bg-img: url("imgs/family.jpg");
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: none;
+    list-style-type: none;
+    text-decoration: none;
+    font-family: "AlkesDemo-SemiBold";
+}
+
+html {
+    font-size: 62.5%;
+}
+
+.register-login-area {
+    margin: 7rem auto;
+    width: 100%;
+}
+
+.register-login-header {
+    font-size: 5rem;
+    font-family: "Averta Demo PE";
+    font-weight: bold;
+    text-align: center;
+    margin: 0 auto 3rem;
+}
+
+.register-form {
+    margin: 0 auto;
+    padding: 10rem 5rem;
+    background-color: black;
+}
+
+.register-form-content-container {
+    margin: 0 auto;
+    width: fit-content;
+}
+
+.register-form label {
+    color: white;
+    display: block;
+    text-align: center;
+    margin: 0.5rem auto;
+    font-size: 1.5rem;
+}
+
+.register-form input, .register-form select {
+    color: white;
+    background-color: transparent;
+    border: 0.2rem dashed white;
+    border-radius: 2rem;
+    padding: 1rem;
+    text-align: center;
+    font-family: "Averta Demo PE";
+    width: 25rem;
+    font-size: 2rem;
+}
+
+.register-form input:invalid, .register-form select:invalid {
+    border-color: red;
+}
+
+.register-form input:invalid:focus, .register-form select:invalid:focus {
+    border-color: rgba(255, 100, 100, 1);
+}
+
+.register-form-submit {
+    margin: 5rem auto 0 !important;
+    display: block;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    transition: all 0.5s;
+}
+
+.register-form-submit:hover {
+    background-color: var(--primary-color);
+    color: black !important;
+    cursor: pointer;
+}
+
+.input-groups {
+    display: flex;
+    justify-content: center;
+}
+
+.input-group {
+    margin: 0 1.5rem 3rem;
+    text-align: center;
+    position: relative;
+}
+
+.pw-field-info {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 35rem;
+    border-radius: 1rem;
+    margin: 1rem auto 0;
+    padding: 0.5rem 2rem;
+    font-size: 1.3rem;
+    font-family: sans-serif;
+    position: absolute;
+    text-align: left;
+    display: none;
+}
+
+.location-section {
+    display: flex;
+}
+
+#password:focus + .pw-field-info{
+    display: block;
+}
+
+#email {
+    width: 40rem;
+}
+
+#address {
+    width: 45rem;
+}
+
+#state {
+    width: 8rem;
+    text-align-last: center;
+}
+
+#state {
+    -moz-appearance:none; /* Firefox */
+    -webkit-appearance:none; /* Safari and Chrome */
+    appearance:none;
+}
+
+#country {
+    width: 20rem;
+}
+
+#zip {
+    width: 10rem;
+}
+
+input[type=date]::-webkit-calendar-picker-indicator {
+    -webkit-appearance: none;
+    display: none;
+}
+
+.pw-field-info-login {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 35rem;
+    border-radius: 1rem;
+    padding: 0.5rem 2rem;
+    font-size: 1.3rem;
+    font-family: sans-serif;
+    position: absolute;
+    top: 9rem;
+    left: 2rem;
+    text-align: left;
+    display: none;
+}
+
+#password:focus + .pw-field-info-login{
+    display: block;
+}
+
+.login-form-submit {
+    margin: 10rem auto 0 !important;
+    display: block;
+    border-color: var(--primary-color) !important;
+    color: var(--primary-color) !important;
+    transition: all 0.5s;
+}
+
+.login-form-submit:hover {
+    background-color: var(--primary-color);
+    color: black !important;
+    cursor: pointer;
+    text-align: center;
+}
+
+.error-msg {
+    border: 0.2rem dashed red;
+    background-color: transparent;
+    color: red;
+    margin: 0 auto 5rem;
+    text-align: center;
+    font-size: 2rem;
+    font-family: "Averta Demo PE";
+    width: fit-content;
+    padding: 1rem;
+    border-radius: 2rem;
+    box-shadow: 0 0 5rem red;
+}
+
+@media (max-width: 825px) {
+    .location-container {
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .location-section {
+        margin: 0 auto;
+    }
+
+    .email-password-container {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 625px) {
+    .names-container {
+        flex-direction: column;
+    }
+
+    .dob-phone-container {
+        flex-direction: column;
+    }
+
+    form {
+        width: 95ﬁ;
+    }
+}
+
+@media (max-width: 525px) {
+    #email, #address {
+        width: 95%;
+    }
+}

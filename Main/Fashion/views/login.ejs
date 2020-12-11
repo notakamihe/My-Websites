@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>New Wave Order Homepage</title>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="registerlogin.css">
+    </head>
+    <body>
+        <header>
+            <div class="header-container-1">
+                <div class="search-container">
+                    <input class="search-bar" type="search">
+                    <button class="search-button"></button>
+                </div>
+                <a href="" class="cart-container">
+                    <img class="cart" src="imgs/cart.png" alt="Cart">
+                </a>
+            </div>
+
+            <div class="header-container-2">
+                <div class="logo-container">
+                    <a href="/"><img class="header-logo" src="imgs/nwo2.png" alt="New Wave Order Logo"/></a>
+                </div>
+                <div class="navigation-container">
+                    <nav class="header-navigation">
+                        <a class="header-navigation-link" href="/new">New</a>
+                        <a class="header-navigation-link" href="">Popular</a>
+                        <a class="header-navigation-link" href="">Children</a>
+                        <a class="header-navigation-link" href="">Men</a>
+                        <a class="header-navigation-link" href="">Women</a>
+                        <a class="header-navigation-link" href="">NW Innovators</a>
+                        <a class="header-navigation-link" href="">Sales</a>
+                    </nav>
+                </div>
+                <% if (currentUser ==  null) { %>
+                    <div class="register-login-container">
+                        <a href="/register" class="register-login-button">Register</a>
+                        <a href="/login" class="register-login-button">Log in</a>
+                    </div>
+                <% } else { %> 
+                    <a class="header-profile-img-container" style="background-image: url('imgs/kitty.jpg')"
+                        href="">
+                    </a>
+                <% } %>
+            </div>
+        </header>
+
+        <section class="register-login-area">
+            <h1 class="register-login-header">Log in</h1>
+            
+            <form action="/login" method="POST" class="register-form" autocomplete="off">
+                <% if (err) { %>
+                    <p class="error-msg"> <%= err.value %> </p>
+                <% } %>
+
+                <div class="register-form-content-container">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" required 
+                        pattern="^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" minlength="8" 
+                        pattern="^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$" required>
+                        <p class="pw-field-info-login">
+                            At least one uppercase letter, one number, and one non-alphanumeric symbol required.
+                        </p>
+                    </div>
+
+                    <input type="submit" class="login-form-submit">
+                </div>
+            </form>
+        </section>
+
+        <footer>
+
+            <div class="footer-top">
+                <div class="footer-list-info">
+                    <div class="footer-list-container footer-headquarters-container">
+                        <h2 class="footer-list-header">Headquarters</h2>
+                        <ul class="footer-list">
+                            <li>Los Angeles, CA</li>
+                            <li>Kansas City, MO</li>
+                            <li>London, UK</li>
+                        </ul>
+                    </div>
+                    <div class="footer-list-container footer-social-media">
+                        <h2 class="footer-list-header">Find us on...</h2>
+                        <ul class="footer-list">
+                            <li>Facebook</li>
+                            <li>Twitter</li>
+                            <li>YouTube</li>
+                            <li>Instagram</li>
+                            <li>Pintrest</li>
+                            <li>Reddit</li>
+                        </ul>
+                    </div>
+                    <div class="footer-list-container footer-about-us">
+                        <h2 class="footer-list-header">About us</h2>
+                        <ul class="footer-list">
+                            <li>About</li>
+                            <li>Code of Ethics</li>
+                            <li>Terms & Privacy</li>
+                            <li>Support</li>
+                            <li>News</li>
+                        </ul>
+                    </div>
+                    <div class="footer-list-container footer-join-us">
+                        <h2 class="footer-list-header">Join us</h2>
+                        <ul class="footer-list">
+                            <li>Careers</li>
+                            <li>Find a job</li>
+                            <li>Our teams</li>
+                            <li>Teens</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-contact">
+                    <h2 class="footer-list-header">CONTACT</h2>
+                    <div class="contact-images-container">
+                        <a style="background-image: url(imgs/email.png);" class="contact-img-container" href=""></a>
+                        <a style="background-image: url(imgs/phone.png);" class="contact-img-container" href=""></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-nav-container">
+                    <nav class="footer-nav">
+                        <a href="">Policies</a>
+                        <a href="">Sitemap</a>
+                        <a href="">Accessiblity</a>
+                    </nav>
+                </div>
+
+                <div class="copyright-container">
+                    <p>&copy; 2020 Akamihe Corporation. All Rights Reserved.</p>
+                </div>
+            </div>
+
+        </footer>
+        <script type="text/javascript" src="script.js"></script>
+    </body>
+</html>
