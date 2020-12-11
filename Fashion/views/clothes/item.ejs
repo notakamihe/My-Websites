@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>New Wave Order Homepage</title>
+            <link rel="stylesheet" href="../style.css">
+            <link rel="stylesheet" href="./item.css">
+        </head>
+        <body>
+            <% currentItem = item %> 
+            <header>
+                <div class="header-container-1">
+                    <div class="search-container">
+                        <input class="search-bar" type="search">
+                        <button class="search-button"></button>
+                    </div>
+                    <a href="" class="cart-container">
+                        <img class="cart" src="../imgs/cart.png" alt="Cart">
+                    </a>
+                </div>
+    
+                <div class="header-container-2">
+                    <div class="logo-container">
+                        <a href="/"><img class="header-logo" src="../imgs/nwo2.png" alt="New Wave Order Logo"/></a>
+                    </div>
+                    <div class="navigation-container">
+                        <nav class="header-navigation">
+                            <a class="header-navigation-link" href="/new">New</a>
+                            <a class="header-navigation-link" href="">Popular</a>
+                            <a class="header-navigation-link" href="">Children</a>
+                            <a class="header-navigation-link" href="">Men</a>
+                            <a class="header-navigation-link" href="">Women</a>
+                            <a class="header-navigation-link" href="">NW Innovators</a>
+                            <a class="header-navigation-link" href="">Sales</a>
+                        </nav>
+                    </div>
+                    <% if (currentUser ==  null) { %>
+                        <div class="register-login-container">
+                            <a href="/register" class="register-login-button">Register</a>
+                            <a href="/login" class="register-login-button">Log in</a>
+                        </div>
+                    <% } else { %> 
+                        <a class="header-profile-img-container" style="background-image: url('../imgs/kitty.jpg');" href=""></a>
+                    <% } %>
+                </div>
+            </header>
+    
+            <section class="item-view-section">
+                <div class="item-view-section-container">
+                    <h1 class="item-view-name"><%- item.name %> </h1>
+                    <div class="item-view-img-info-container">
+                        <div class="item-view-img-container">
+                            <img class="item-view-img" src="../<%= item.img %> " alt="">
+                        </div>
+                        <div class="item-view-info">
+                            <p class="item-view-price">$<%- item.price %> </p>
+                            <div class="item-view-sizes">
+                                <% item.sizes.forEach(size => { %> 
+                                    <p class="item-view-size"><%= size %> </p>
+                                <% }) %> 
+                            </div>
+
+                            <% if (item.numberInStock > 0) { %>
+                                <div class="item-view-quantity">
+                                    <div>
+                                        <input onclick="incrementItemQuantity(1)" class="quantity-chevron quantity-chevron-up" 
+                                        type="image" src="../imgs/chevron.png">
+                                        <p class="item-view-quantity-tracker">1</p>
+                                        <input onclick="incrementItemQuantity(-1)" class="quantity-chevron quantity-chevron-down" type="image" src="../imgs/chevron.png">
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <h2>Out of stock</h2>
+                            <% } %>  
+
+                            <%if (currentUser && item.numberInStock > 0) { %>
+                                <form action="/addtocart" method="POST">
+                                    <input type="text" class="item-quantity-storage" style="display: none;" name="quantity-tracker" value="0">
+                                    <button type="submit" class="item-view-add-to-cart">Add to cart</button>
+                                </form>
+                            <% } else { %>
+                                <input type="text" class="item-quantity-storage" style="display: none;" name="quantity-tracker" value="0">
+                                <button type="submit" class="item-view-add-to-cart">Add to cart</button>
+                            <% }  %> 
+                        </div>
+                    </div>
+                    
+                </div>
+            </section>
+    
+            <footer>
+    
+                <div class="footer-top">
+                    <div class="footer-list-info">
+                        <div class="footer-list-container footer-headquarters-container">
+                            <h2 class="footer-list-header">Headquarters</h2>
+                            <ul class="footer-list">
+                                <li>Los Angeles, CA</li>
+                                <li>Kansas City, MO</li>
+                                <li>London, UK</li>
+                            </ul>
+                        </div>
+                        <div class="footer-list-container footer-social-media">
+                            <h2 class="footer-list-header">Find us on...</h2>
+                            <ul class="footer-list">
+                                <li>Facebook</li>
+                                <li>Twitter</li>
+                                <li>YouTube</li>
+                                <li>Instagram</li>
+                                <li>Pintrest</li>
+                                <li>Reddit</li>
+                            </ul>
+                        </div>
+                        <div class="footer-list-container footer-about-us">
+                            <h2 class="footer-list-header">About us</h2>
+                            <ul class="footer-list">
+                                <li>About</li>
+                                <li>Code of Ethics</li>
+                                <li>Terms & Privacy</li>
+                                <li>Support</li>
+                                <li>News</li>
+                            </ul>
+                        </div>
+                        <div class="footer-list-container footer-join-us">
+                            <h2 class="footer-list-header">Join us</h2>
+                            <ul class="footer-list">
+                                <li>Careers</li>
+                                <li>Find a job</li>
+                                <li>Our teams</li>
+                                <li>Teens</li>
+                            </ul>
+                        </div>
+                    </div>
+    
+                    <div class="footer-contact">
+                        <h2 class="footer-list-header">CONTACT</h2>
+                        <div class="contact-images-container">
+                            <a style="background-image: url(../imgs/email.png);" class="contact-img-container" href=""></a>
+                            <a style="background-image: url(../imgs/phone.png);" class="contact-img-container" href=""></a>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="footer-bottom">
+                    <div class="footer-nav-container">
+                        <nav class="footer-nav">
+                            <a href="">Policies</a>
+                            <a href="">Sitemap</a>
+                            <a href="">Accessiblity</a>
+                        </nav>
+                    </div>
+    
+                    <div class="copyright-container">
+                        <p>&copy; 2020 Akamihe Corporation. All Rights Reserved.</p>
+                    </div>
+                </div>
+    
+            </footer>
+            <script type="text/javascript" src="/script.js"></script>
+            <script type="text/javascript">
+                if (parseInt("<%= item.numberInStock %>") > 0) {
+                    var itemQuantity = 1;
+                    var itemQuantityStorage = document.querySelector(".item-quantity-storage");
+
+                    function incrementItemQuantity (value)
+                    {
+                        itemQuantity += value;
+
+                        if (itemQuantity < 1)
+                            itemQuantity = 1;
+
+                        if (itemQuantity > "<%= item.numberInStock %>")
+                            itemQuantity = parseInt("<%= item.numberInStock %>");
+                    }
+
+                    setInterval(() => { document.querySelector(".item-view-quantity-tracker").innerHTML = itemQuantity}, 100);
+                    setInterval(() => { itemQuantityStorage.value = itemQuantity; })
+                    setInterval(() => { console.log("<%= item.numberInStock %>") }, 100);
+                }
+            </script>
+        </body>
+    </html>
+</body>
+</html>

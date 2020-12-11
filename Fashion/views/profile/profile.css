@@ -1,0 +1,119 @@
+@font-face {
+    font-family: "Averta Demo PE";
+    src: url("../../../fonts/Averta.ttf");
+}
+
+@font-face {
+    font-family: "AlkesDemo-SemiBold";
+    src: url("../../../fonts/AlkesDemo-Semibold.ttf");
+}
+
+:root {
+    --primary-color: #0059ff;
+    
+    --primary-font: "Alkes", serif;
+    --secondary-font: "Averta Bold Italic", sans-serif;
+    --tertiary-font: "Averta", sans-serif;
+
+    --statement-bg-img: url("imgs/family.jpg");
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    outline: none;
+    list-style-type: none;
+    text-decoration: none;
+    font-family: "AlkesDemo-SemiBold";
+}
+
+html {
+    font-size: 62.5%;
+}
+
+.profile-info-container {
+    background-color: black;
+    width: 25rem;
+    margin: 5rem auto;
+    border-radius: 1rem;
+}
+
+.profile-info-container *  {
+    color: white;
+}
+
+.profile-image-container {
+    background-color: blue;
+    width: 100%;
+    height: 25rem;
+    border-radius: 1rem 1rem 0 0;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.profile-view {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.profile-text {
+    font-family: "Averta Demo PE";
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 3rem auto;
+}
+
+.profile-text-container {
+    padding: 4rem;
+}
+
+.profile-info-text-separator {
+    margin: 3rem auto;
+    width: 80%;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.profile-text-icon {
+    width: 2.5rem;
+    display: block;
+    filter: invert(10%);
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 1rem;
+}
+
+.profile-name {
+    font-size: 2rem;
+    word-spacing: 0.5rem;
+}
+
+.profile-email {
+    font-size: 1.5rem;
+    word-wrap: break-word;
+    margin: 1rem;
+}
+
+.profile-phone {
+    margin-top: 0;
+}
+
+.go-to-cart-button {
+    display: inline-block;
+    margin: 0 1rem;
+    font-family: "Averta Demo PE";
+    font-size: 1.5rem;
+    padding: 1rem;
+    border: 0.2rem var(--primary-color) dashed;
+    border-radius: 2rem;
+    color: var(--primary-color);
+    transition: all 0.5s;
+}
+
+.go-to-cart-button:hover {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    margin-top: auto;
+}

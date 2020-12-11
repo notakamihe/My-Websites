@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Air Shoes 3",
+        "price": 49.99,
+        "sizes": [6.5, 7, 7.5, 8, 9, 9.5, 10, 11],
+        "img": "imgs/shoe.jpg",
+        "numberInStock": 10,
+        "categories": ["mens", "new"]
+    },
+    {
+        "name": "Pink T-shirt",
+        "price": 8.99,
+        "sizes": ["S", "M", "L", "XL"],
+        "img": "imgs/shirt.jpeg",
+        "numberInStock": 21,
+        "categories": ["children", "new"]
+    },
+    {
+        "name": "Black Leggings",
+        "price": 19.99,
+        "sizes": ["S", "M", "L", "XL", "XXL", "XXXL"],
+        "img": "imgs/leggings.jpg",
+        "numberInStock": 7,
+        "categories": ["womens", "new"]
+    }
+]
