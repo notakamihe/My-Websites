@@ -1,0 +1,22 @@
+{% extends 'example/index.html' %}
+
+{% block content %}
+    <h1>Register</h1>
+
+    <form method="POST" action="" style="margin-left: 3rem; margin-bottom: 2.5rem;">
+        {% csrf_token %}
+        
+        <div class="mt-5">
+            <div class="mt-5 mb-4"><p>{{ form.username.label }}</p>  {{ form.username }}</div>
+            <div class="mt-4 mb-4"><p>{{ form.email.label }}</p>  {{ form.email }}</div>
+            <div class="mt-4 mb-4"><p>{{ form.password1.label }}</p>  {{ form.password1 }}</div>
+            <div class="mt-4 mb-4"><p>{{ form.password2.label }}</p>  {{ form.password2 }}</div>
+        </div>
+
+        <input type="submit" name="create-user">
+    </form>
+
+    {{ form.errors }}
+
+    <p>Already have an account? <a href="{% url 'login' %}">Click here.</a></p>
+{% endblock content %}
