@@ -25,6 +25,22 @@
     </div>
 
      <script>
+         function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
          function createElementWClassId (tag, cls=null, id=null, innerHTML=null)
          {
             element = document.createElement(tag)
@@ -35,13 +51,47 @@
             return element
          }
 
-         function handleDidLike (tweetId, currentCount) {
+         function handleTweetAction (tweetId, currentCount, action) {
             console.log(tweetId, currentCount)
+            const url = '/api/tweets/action'
+            const method = 'POST'
+
+            const data = JSON.stringify({
+                id: tweetId,
+                action: action
+            })
+
+            const xhr = new XMLHttpRequest()
+            const csrftoken = getCookie('csrftoken');
+
+            xhr.open(method, url)
+            xhr.setRequestHeader('Content-Type', 'application/json')
+            xhr.setRequestHeader('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest')
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+            xhr.setRequestHeader('X-CSRFToken', csrftoken)
+
+            xhr.onload = function () {
+                loadTweets(tweets)
+            }
+
+            xhr.send(data)
          }
 
          function likeBtn (tweet) {
             button = createElementWClassId('button', 'btn btn-primary', null, tweet.likes + ' likes')
-            button.onclick = () => handleDidLike(tweet.id, tweet.likes)
+            button.onclick = () => handleTweetAction(tweet.id, tweet.likes, 'like')
+            return button
+         }
+
+         function unlikeBtn (tweet) {
+            button = createElementWClassId('button', 'btn btn-outline-primary', null, 'Unlike')
+            button.onclick = () => handleTweetAction(tweet.id, tweet.likes, 'unlike')
+            return button
+         }
+
+         function retweetBtn (tweet) {
+            button = createElementWClassId('button', 'btn btn-outline-success', null, 'Retweet')
+            button.onclick = () => handleTweetAction(tweet.id, tweet.likes, 'retweet')
             return button
          }
 
@@ -50,6 +100,8 @@
 
             tweetContainer.appendChild(createElementWClassId('p', null, null, tweet.content))
             tweetContainer.appendChild(likeBtn(tweet))
+            tweetContainer.appendChild(unlikeBtn(tweet))
+            tweetContainer.appendChild(retweetBtn(tweet))
 
             return tweetContainer
          }
@@ -57,16 +109,14 @@
          function loadTweets (tweetsElement) {
             const xhr = new XMLHttpRequest()
             const method = 'GET'
-            const url = '/tweets/'
+            const url = '/tweets'
             const responseType = 'json'
 
             xhr.responseType = responseType
             xhr.open(method, url)
 
             xhr.onload = () => {
-                console.log(xhr.response)
-
-                var listedItems = xhr.response.response
+                var listedItems = xhr.response
 
                 tweetsElement.innerHTML = ''
                 for (var i = 0; i < listedItems.length; i++)
@@ -115,6 +165,12 @@
                     } else {
                         alert('An error occured. Please try again later.')
                     }
+                } else if (xhr.status === 401) {
+                    alert('You must login!')
+                    window.location.href = '/login'
+                } else if (xhr.status === 403) {
+                    alert('You must login!')
+                    window.location.href = '/login'
                 } else if (xhr.status === 500) {
                     alert("There was a server error. Please try again.")
                 }
