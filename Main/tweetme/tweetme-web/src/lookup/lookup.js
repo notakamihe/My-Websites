@@ -1,7 +1,12 @@
-export function loadTweets (callback) {
+function lookup (method, endpoint, callback, data) {
+    let jsonData
+
+    if (data) {
+        jsonData = JSON.stringify(data)
+    }
+
     const xhr = new XMLHttpRequest()
-    const method = 'GET'
-    const url = 'http://localhost:8000/api/tweets'
+    const url = `http://localhost:8000/api${endpoint}`
     const responseType = 'json'
 
     xhr.responseType = responseType
@@ -15,5 +20,9 @@ export function loadTweets (callback) {
         callback({'message': 'The request was an error'}, 400)
     }
 
-    xhr.send()
+    xhr.send(jsonData)
+}
+
+export function loadTweets (callback) {
+    lookup('GET', '/tweets/', callback)
  } 

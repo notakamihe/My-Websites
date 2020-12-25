@@ -9,7 +9,7 @@
         </div>
     </div>
 
-    <div class="row mb-5">
+    <div class="row mb-5 d-none">
         <div class="col-md-4 mx-auto col-10">
             <form class="form" id="tweet-create" method="POST" action="create/"> {% csrf_token %}
                 <div class="d-none alert alert-danger" id="tweet-create-error"></div>
@@ -20,7 +20,10 @@
         </div>
     </div>
 
-    <div class="row" id="tweets">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="tweetme"></div>
+
+    <div class="row d-none" id="tweets">
         Loading...
     </div>
 

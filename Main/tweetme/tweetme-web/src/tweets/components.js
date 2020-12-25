@@ -42,21 +42,65 @@ export function Tweet (props) {
 }
 
 export function TweetsList (props) {
-    const [tweets, setTweets] = useState([{ content: 123 }]) 
+    const [tweetsInit, setTweetsInit] = useState(props.newTweets ? props.newTweets : []) 
+    const [tweets, setTweets] = useState([])
+    const [areTweetsSet, setAreTweetsSet] = useState(false)
 
     useEffect(() => {
-        const myCallback = (response, status) => {
-            if (status === 200) {
-                setTweets(response)
-            } else {
-                alert('There was an error')
+        const final = [...props.newTweets].concat(tweetsInit)
+
+        if (final.length !== tweets.length) {
+            setTweets(final)
+        }
+        
+    }, [props.newTweets, tweets, tweetsInit])
+
+    useEffect(() => {
+        if (areTweetsSet === false) {
+            const myCallback = (response, status) => {
+                if (status === 200) {
+                    setTweetsInit(response)
+                    setAreTweetsSet(true)
+                } else {
+                    alert('There was an error')
+                }
             }
         }
 
         loadTweets(myCallback)
-    }, [])
+    }, [tweetsInit, areTweetsSet, setAreTweetsSet])
 
     return tweets.map((item, index) => {
         return <Tweet tweet={item} className=' my-5 py-5 border bg-white text-dark' key={`${index}-{item.id}`} />
     })
- }
+}
+
+export function TweetsComponent (props) {
+    const textAreaRef = React.createRef()
+    const [newTweets, setNewTweets] = useState([])
+
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        const newVal = textAreaRef.current.value
+        let tempNewTweets = [...newTweets]
+
+        tempNewTweets.unshift({
+            content: newVal,
+            likes: 0,
+            id: 12312
+        })
+
+        setNewTweets(tempNewTweets)
+        textAreaRef.current.value = ''
+    }
+
+    return <div className={props.className}>
+        <div className='col-12 mb-3'>
+            <form onSubmit={handleSubmit}>
+                <textarea ref={textAreaRef} className='form-control' name='tweet' required={true}></textarea>
+                <button type='submit' className='btn btn-primary my-3'>Tweet now</button>
+            </form>
+        </div>
+        <TweetsList newTweets={newTweets} />
+    </div>
+}

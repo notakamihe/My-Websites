@@ -1,6 +1,6 @@
 holidays = {
     "November 26": "Happy Thanksgiving",
-    "Decemeber 25": "Merry Christmas",
+    "December 25": "Merry Christmas",
     "January 1": "Happy New Year",
     "January 18": "Martin Luther King Day",
     "February 1": "Day 1 of Black History Month",
