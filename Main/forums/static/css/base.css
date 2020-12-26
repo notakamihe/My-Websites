@@ -1,0 +1,14 @@
+* {
+    color: white;
+}
+
+.focus-thicken {
+    transition: all 0.5s;
+    color: white;
+}
+
+.focus-thicken:focus {
+    box-shadow: none;
+    border: 3px white solid;
+    color: white;
+}
