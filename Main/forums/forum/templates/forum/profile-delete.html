@@ -1,0 +1,76 @@
+{% extends 'forum/base.html' %}
+{% load static %}
+
+{% block head_title %}Delete {{ profile.forum_user.user.username }}{% endblock head_title %}
+
+{% block content %}
+    <style>
+        .profile-img-outline {
+            position: relative;
+            width: 17rem;
+            height: 17rem;
+            margin: auto;
+            border-radius: 50%;
+            border: 0.15rem solid white;
+        }
+
+        .profile-img-container {
+            background-image: url( "{{ profile.picture_url }}" );
+            width: 15rem;
+            height: 15rem;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            margin: auto;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .profile-img-container:hover {
+            background-image: linear-gradient(#000000bb, #000000bb), url( "{{ profile.picture_url }}" );
+        }
+
+        .profile-img-container:hover * {
+            display: block;
+        }
+
+        .profile-img-button {
+            position: absolute;
+            top: 85%;
+            left: 55%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        input[type='file'] {
+            color: transparent;
+            width: 8rem;
+        }
+
+        input[type='file']:hover {
+            color: transparent;
+        }
+    </style>
+
+    <h1 class="mb-5">Delete the profile of {{ profile.forum_user.user.username }} </h1>
+
+    <div style="background-color: #ffffff33;" class="col-5 p-5 rounded">
+        <h2 class="mb-5">
+            You are about to delete the profile of {{ profile.forum_user.user.username }} 
+            ({{ profile.forum_user.full_name }}). Your account will not be recovered.
+        </h2>
+        <div>
+            <form action="" class="d-inline" method="POST"> {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Confirm</button>
+            </form>
+            
+            <a class="btn btn-secondary mx-3" href="{% url 'profile' profile.forum_user.id %}">Cancel</a>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script></script>
+{% endblock content %}

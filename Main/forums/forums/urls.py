@@ -29,7 +29,9 @@ urlpatterns = [
     path('posts/', post_list_view, name='posts'),
     path('posts/<int:profile_id>', post_details_view, name='post-details'),
     path('profiles/<int:forum_user_id>', profile_details_view, name='profile'),
-    path('profiles/<int:forum_user_id>/update', profile_update_view, name='profile-update')
+    path('profiles/<int:forum_user_id>/update', profile_update_view, name='profile-update'),
+    path('profiles/<int:forum_user_id>/delete', profile_delete_view, name='profile-delete'),
+    path('profiles/account-deleted', account_deleted_view, name='account-deleted')
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

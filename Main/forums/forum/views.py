@@ -88,6 +88,23 @@ def profile_update_view (request, forum_user_id):
     return render(request, 'forum/profile-update.html', { 'profile': profile })
 
 
+def account_deleted_view (request):
+    return render(request, 'forum/account-deleted.html', {})
+
+
+def profile_delete_view (request, forum_user_id):
+    if forum_user_id in [obj.id for obj in ForumUser.objects.all()]:
+        profile = Profile.objects.get(forum_user=ForumUser.objects.get(id=forum_user_id))
+
+        if request.method == 'POST':
+            profile.forum_user.user.delete()
+            return redirect('account-deleted')
+    else:
+        raise Http404
+
+    return render(request, 'forum/profile-delete.html', { 'profile': profile })
+
+
 def post_list_view (request):
     return render(request, 'forum/posts.html', {})
 

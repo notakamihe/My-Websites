@@ -50,7 +50,7 @@
 
         <div class="mx-auto text-center mt-5">
             <a class="btn btn-success text-center mx-2" href="{% url 'profile-update' profile.forum_user.id %}">Edit</a>
-            <a class="btn btn-danger text-center mx-2" href="">Delete</a>
+            <a class="btn btn-danger text-center mx-2" href="{% url 'profile-delete' profile.forum_user.id %}">Delete</a>
         </div>
     </div>
 
