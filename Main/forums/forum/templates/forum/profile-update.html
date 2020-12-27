@@ -1,0 +1,126 @@
+{% extends 'forum/base.html' %}
+{% load static %}
+
+{% block head_title %}Update {{ profile.forum_user.user.username }}{% endblock head_title %}
+
+{% block content %}
+    <style>
+        .profile-img-outline {
+            position: relative;
+            width: 17rem;
+            height: 17rem;
+            margin: auto;
+            border-radius: 50%;
+            border: 0.15rem solid white;
+        }
+
+        .profile-img-container {
+            background-image: url( "{{ profile.picture_url }}" );
+            width: 15rem;
+            height: 15rem;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            margin: auto;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .profile-img-container:hover {
+            background-image: linear-gradient(#000000bb, #000000bb), url( "{{ profile.picture_url }}" );
+        }
+
+        .profile-img-container:hover * {
+            display: block;
+        }
+
+        .profile-img-button {
+            position: absolute;
+            top: 85%;
+            left: 55%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        input[type='file'] {
+            color: transparent;
+            width: 8rem;
+        }
+
+        input[type='file']:hover {
+            color: transparent;
+        }
+    </style>
+
+    <h1 class="mb-5">Update profile for {{ profile.forum_user.user.username }} </h1>
+
+    <div style="background-color: #ffffff33;" class="col-5 p-5 rounded">
+        <form enctype="multipart/form-data" id="pfp-form" method="POST"> {% csrf_token %}
+            <div class="profile-img-outline">
+                <div class="profile-img-container">
+                    <input type="file" title=" " class="profile-img-button" id="profile-img-input" 
+                    name="profile-img-input" accept="image/*">
+                </div>
+            </div>
+        </form>
+
+        <form method="POST" class="mx-auto text-center" id='profile-info-form' onsubmit="">{% csrf_token %}
+
+            <div class="mt-5">
+                <input style="border: 1px solid white; width: 12rem; font-size: 2rem;" type="text" 
+                class="d-inline bg-transparent border-white rounded p-2 mb-4" name="first_name"
+                value="{{ profile.forum_user.first_name }}">
+                <input style="border: 1px solid white; width: 12rem; font-size: 2rem;" type="text" 
+                class="d-inline bg-transparent border-white rounded p-2 mb-4" name="surname"
+                value="{{ profile.forum_user.surname }}">
+            </div>
+            
+            <p class="mx-auto text-center my-1">Joined {{ profile.date_joined }} </p>
+            <input style="border: 1px solid white; width: 24rem;" type="text" name="location"
+            class="text-center bg-transparent border-white rounded p-2 m-4" 
+            value="{{ profile.forum_user.location }}">
+            <input style="border: 1px solid white;" type="date" class="text-center bg-transparent border-white rounded p-2 m-4" name="dob"
+            value="{{ profile.forum_user.dob.year }}-{{profile.forum_user.dob.month|stringformat:'02d'}}-{{ profile.forum_user.dob.day|stringformat:'02d' }}">
+            
+            <textarea style="text-align: left;" class="text-left mt-4 rounded bg-transparent border-white p-3 " name="description" 
+            id="" cols="40" wrap="physical" rows="9">{% if profile.description %}{{ profile.description }}{% endif %}</textarea>
+            
+
+            <div class="mx-auto text-center mt-5">
+                <button type="submit" class="btn btn-success my-2">Save</button>
+                <p><a href="{% url 'profile' profile.forum_user.id %}" class="btn btn-secondary my-2">Back</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script>
+        $('#profile-img-input').change(function() {
+            $('#pfp-form').submit();
+        })
+
+       
+
+        $('#profile-info-form').submit(function(e) {
+            var formData = new FormData($(this))
+            
+
+            $.ajax({
+                type: "POST",
+                url: '',
+                data: formData,
+                dataType: 'json',
+                success: (response) => {
+                    console.log('Success')
+                },
+                processData: false
+            })
+        })
+
+        
+    </script>
+{% endblock content %}

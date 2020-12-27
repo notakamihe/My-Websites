@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from forum.views import *
 
@@ -26,4 +28,8 @@ urlpatterns = [
     path('create/', create_view, name='create'),
     path('posts/', post_list_view, name='posts'),
     path('posts/<int:profile_id>', post_details_view, name='post-details'),
+    path('profiles/<int:forum_user_id>', profile_details_view, name='profile'),
+    path('profiles/<int:forum_user_id>/update', profile_update_view, name='profile-update')
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

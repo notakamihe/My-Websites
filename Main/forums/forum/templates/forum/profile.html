@@ -1,0 +1,59 @@
+{% extends 'forum/base.html' %}
+{% load static %}
+
+{% block head_title %}Profile of {{ profile.forum_user.user.username }}{% endblock head_title %}
+
+{% block content %}
+    <style>
+        .profile-img-outline {
+            position: relative;
+            width: 17rem;
+            height: 17rem;
+            margin: auto;
+            border-radius: 50%;
+            border: 0.15rem solid white;
+        }
+
+        .profile-img-container {
+            background-image: url( "{{ profile.picture_url }}" );
+            width: 15rem;
+            height: 15rem;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            margin: auto;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+
+    <h1 class="mb-5">Profile for {{ profile.forum_user.user.username }} </h1>
+
+    <div style="background-color: #ffffff33;" class="col-5 p-5 rounded">
+        <div class="profile-img-outline">
+            <div class="profile-img-container"></div>
+        </div>
+
+        <h2 style="word-spacing: 0.5rem;" class="mx-auto text-center mt-5"> {{ profile.forum_user.full_name }} </h2>
+        <p class="mx-auto text-center my-1">Joined {{ profile.date_joined }} </p>
+        <p class="mx-auto text-center my-1">Located at: {{ profile.forum_user.location }} </p>
+        <p class="mx-auto text-center my-1">Born in: {{ profile.forum_user.dob_month}} </p>
+
+        {% if profile.description != None and profile.description and not profile.is_description_whitespace %}
+            <p class="text-center mt-5"> {{ profile.description }} </p>
+        {% else %}
+            <p class="mx-auto text-center mt-5"><strong>[ No description for {{ profile.forum_user.user.username }} ]</strong></p>
+        {% endif %}
+
+        <div class="mx-auto text-center mt-5">
+            <a class="btn btn-success text-center mx-2" href="{% url 'profile-update' profile.forum_user.id %}">Edit</a>
+            <a class="btn btn-danger text-center mx-2" href="">Delete</a>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+{% endblock content %}

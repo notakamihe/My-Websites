@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 import datetime
 
-from .models import ForumUser
+from .models import *
 
 class DateInput(forms.DateInput):
     input_type = 'date'

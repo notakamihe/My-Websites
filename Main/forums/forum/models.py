@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.validators import MinLengthValidator
+from django.urls import reverse
 from django.contrib.auth.models import User
+
+import datetime
 
 # Create your models here.
 
@@ -16,13 +19,33 @@ class ForumUser (models.Model):
     @property
     def full_name (self):
         return self.first_name + ' ' + self.surname
+
+    @property
+    def dob_month (self):
+        months = [
+            'January', 'February', 'March', 'April', 'May', 'June', 
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ]
+
+        return months[self.dob.month - 1]
         
 
 class Profile (models.Model):
     forum_user = models.OneToOneField(ForumUser, on_delete=models.CASCADE)
-    picture = models.ImageField(default='defpfp.jpg', null=True, blank=True)
+    picture = models.ImageField(default='defpfp.jpg', upload_to='profiles/', null=True, blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     description = models.CharField(max_length=500, null=True, blank=True)
+
+    @property
+    def picture_url (self):
+        try:
+            return self.picture.url
+        except:
+            return ''
+
+    @property
+    def is_description_whitespace (self):
+        return self.description.isspace()
 
 
 class ForumPost (models.Model):
