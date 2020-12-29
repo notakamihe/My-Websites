@@ -1,7 +1,147 @@
 {% extends 'forum/base.html' %}
+{% load static %}
 
-{% block head_title %}Forum Website Detail{% endblock head_title %}
+{% block head_title %}{{ post.title }}{% endblock head_title %}
 
 {% block content %}
-    <h1>Post detail</h1>
-{% endblock content%}
+    <style>
+        .post-profile-pic-container {
+            width: 3rem;
+            height: 3rem;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .reply-profile-pic-container {
+            width: 2.5rem;
+            height: 2.5rem;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .upvote-triangle {
+            width: 0.75rem;
+        }
+
+        .upvote-triangle:first-of-type {
+            transform: scaleX(-1);
+        }
+    </style>
+
+    <h1 class="mb-5">{{ post.title }}</h1>
+
+    <div class="p-4 px-5">
+        <div class="d-flex mb-5" style="align-items: center; padding-right: 5rem;">
+            <div style="background-image: url('{{ post.profile.picture_url }}');"
+            class="rounded-circle border post-profile-pic-container"></div>
+            <span class="mx-4">&bullet;</span>
+            <a href="{% url 'profile' post.profile.forum_user.id %}"><strong style="font-size: 1.5rem;">{{ post.profile.forum_user.user.username }}</strong></a>
+            <div style="margin-left: auto; display: flex; align-items: center;">
+                <img src="{% static 'images/triangle.png' %}" alt="" class="upvote-triangle">
+                <span style="font-size: 2rem;" class="mx-4">{{ post.upvotes }}</span>
+                <img src="{% static 'images/triangle.png' %}" alt="" class="upvote-triangle">
+            </div>
+        </div>
+        <p style="font-size: larger;" class="px-5 muted mb-5">{{ post.description }}</p>
+        <p><strong class="px-5 small">{{ post.date_posted }}</strong></p>
+        <div class="mx-5 my-5">
+            <div style="float: right;">
+                {% if is_authorized %}
+                    <a class="btn btn-primary" href="{% url 'post-update' post.id %}">Edit</a>
+                    <a class="btn btn-danger" href="{% url 'post-delete' post.id %}">Delete</a>
+                {% elif is_logged_in %}
+                    <button class="btn btn-info" id="reply">Reply</button>
+                {% endif %}
+                
+            </div>
+            <p style="font-size:larger;" >{{ post.num_replies }} replies</p>
+        </div>
+        <hr class="my-5">
+    </div>
+
+    <form style="margin-left: 4rem; display: none;" action="" method="POST" class="mb-5" id="reply-form"> {% csrf_token %}
+        {{ reply_form.content }}
+        <div>
+            <button type="submit" class="btn btn-success mt-4 mx-2">Send</button>
+            <button type="submit" class="btn btn-secondary mt-4 mx-2" id="reply-cancel">Cancel</button>
+        </div>
+    </form>
+
+    <div class="px-5">
+        {% for reply in replies %}
+            <form action="" class="px-3" method="POST" data-action="som"> {% csrf_token %}
+                <div class="d-flex mb-5" style="align-items: center; padding-right: 5rem;">
+                    <div style="background-image: url('{{ reply.replier.picture_url }}');"
+                    class="rounded-circle border reply-profile-pic-container"></div>
+                    <a href="{% url 'profile' reply.replier.forum_user.id %}" style="margin-left: 2rem;"><strong style="font-size: 1.25rem;">{{ reply.replier.forum_user.user.username }}</strong></a>
+                    <input type="text" name="id" value="{{ reply.id }}" class="d-none">
+                    <span class="mx-4">&bullet;</span>
+                    <a href="{% url 'profile' post.profile.forum_user.id %}"><strong style="font-size: 1.25rem;">{{ reply.to.profile.forum_user.user.username }}</strong></a>
+                    <div style="background-image: url('{{ reply.to.profile.picture_url }}'); margin-left: 2rem;"
+                    class="rounded-circle border reply-profile-pic-container"></div>
+                </div>
+                <p class="px-5 muted mb-4 edit-reply-content" name="content">{{ reply.content }}</p>
+                <div style="float: right;">
+                    {% if req_user == reply.replier.forum_user.user %}
+                        <button class="btn btn-primary" id="edit-reply">Edit</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    {% elif is_logged_in %}
+                        <button class="btn btn-info" id="reply">Reply</button>
+                    {% endif %}
+                </div>
+                <p><small><strong class="px-5 small">{{ reply.date_replied }}</strong></small></p>
+                <hr class="my-5">
+            </form>
+        {% endfor %}
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(() => {
+            var contentVar;
+
+            $("#reply").click( () => {
+                $('#reply-form').show()
+            })
+
+            $("#reply-cancel").click( (e) => {
+                e.preventDefault()
+                $('#reply-form').hide()
+            })
+
+            $('#edit-reply').parent().parent().submit(function (e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: "POST",
+                    url: "",
+                    data: $('#edit-reply').parent().parent().serialize(),
+                    success: function(data) {
+                        console.log($('#edit-reply').parent().parent().serialize())
+                        content = $('#edit-reply').parent().parent().find('.edit-reply-content').first()
+                    }  
+                })
+
+                window.location.href = ''
+            })
+
+            $('#edit-reply').click( (e) => {
+                e.preventDefault()
+                content = $('#edit-reply').parent().parent().find('.edit-reply-content').first()
+                contentVar = content.html()
+
+                if (content.is('textarea')) {
+                    $('#edit-reply').parent().parent().submit()
+                    content.replaceWith(`<p class="px-5 muted mb-4 edit-reply-content">${contentVar}</p>`) 
+                } else {
+                    content.replaceWith(`<textarea style="margin-left: 3rem" class="bg-transparent border mb-4 col-9 rounded edit-reply-content" name="reply-content">${content.html()}</textarea>`)
+                }
+            })
+        })
+        
+    </script>
+
+{% endblock content %}

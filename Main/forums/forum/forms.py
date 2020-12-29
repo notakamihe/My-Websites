@@ -67,3 +67,31 @@ class ForumUserForm (forms.ModelForm):
             raise ValidationError('Too young. You must be at least 13.')
 
         return dob
+
+
+class ForumPostForm (forms.ModelForm):
+    class Meta:
+        model = ForumPost
+        fields = ['title', 'description']
+
+    def __init__ (self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['description'].widget = forms.Textarea()
+
+        for key, value in self.fields.items():
+            value.widget.attrs.update({'class': 'form-control bg-transparent focus-thicken'})
+
+
+class ReplyFrom (forms.ModelForm):
+    class Meta:
+        model = Reply
+        fields = ['content']
+    
+    def __init__ (self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.fields['content'].widget = forms.Textarea(attrs={
+            'cols': 90,
+            'rows': 3,
+            'class': 'border bg-transparent roundeed d-block'
+        })

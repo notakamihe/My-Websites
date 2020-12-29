@@ -1,7 +1,41 @@
 {% extends 'forum/base.html' %}
+{% load static %}
 
-{% block head_title %}Forum Website Forum posts{% endblock head_title %}
+{% block head_title %}Forum Website Forum all posts{% endblock head_title %}
 
 {% block content %}
-    <h1>Posts</h1>
+    <style>
+        .post-profile-pic-container {
+            width: 3rem;
+            height: 3rem;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+
+    <h1 class="mb-5">Posts</h1>
+
+    <div>
+        {% for post in posts %}
+            <div class="px-5 py-4 rounded mb-5" style="background-color: #ffffff11;">
+                <a style="text-decoration: none;" href="{% url 'post-details' post.id %}">
+                    <h2 class="mb-4">{{ post.title }}</h2>
+                    <p class="mb-5">{{ post.description }}</p>
+                </a>
+                <div class="d-flex">
+                    <div style="width: 50%; margin-right: 5rem; align-items: center;" class="d-flex bg-dark border rounded p-4">
+                        <div style="background-image: url('{{ post.profile.picture_url }}');"
+                         class="rounded-circle border mx-4 post-profile-pic-container"></div>
+                        <a href="{% url 'profile' post.profile.forum_user.id %}"><strong>{{ post.profile.forum_user.user.username }}</strong></a>
+                    </div>
+                    <div class="">
+                        <p class="my-1"><small><strong>{{ post.upvotes }} upvotes</strong></small></p>
+                        <p class="my-1"><small><strong>{{ post.replies }} replies</strong></small></p>
+                        <p class="my-1"><small><strong>{{ post.date_posted }}</strong></small></p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock content%}

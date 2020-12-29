@@ -1,0 +1,54 @@
+{% extends 'forum/base.html' %}
+{% load static %}
+
+{% block head_title %}Delete {{ post.title }}{% endblock head_title %}
+
+{% block content %}
+    <style>
+        .post-profile-pic-container {
+            width: 3rem;
+            height: 3rem;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .upvote-triangle {
+            width: 0.75rem;
+        }
+
+        .upvote-triangle:first-of-type {
+            transform: scaleX(-1);
+        }
+    </style>
+
+    <h1 class="mb-5">{{ post.title }}</h1>
+
+    <div class="p-4 px-5">
+        <div class="d-flex mb-5" style="align-items: center; padding-right: 5rem;">
+            <div style="background-image: url('{{ post.profile.picture_url }}');"
+            class="rounded-circle border post-profile-pic-container"></div>
+            <span class="mx-4">&bullet;</span>
+            <a href="{% url 'profile' post.profile.forum_user.id %}"><strong style="font-size: 1.5rem;">{{ post.profile.forum_user.user.username }}</strong></a>
+            <div style="margin-left: auto; display: flex; align-items: center;">
+                <img src="{% static 'images/triangle.png' %}" alt="" class="upvote-triangle">
+                <span style="font-size: 2rem;" class="mx-4">{{ post.upvotes }}</span>
+                <img src="{% static 'images/triangle.png' %}" alt="" class="upvote-triangle">
+            </div>
+        </div>
+        <p style="font-size: larger;" class="px-5 muted mb-5">{{ post.description }}</p>
+        <p><strong class="px-5 small">{{ post.date_posted }}</strong></p>
+        <div class="mx-5 my-5">
+            <p style="font-size:larger;" >{{ post.replies }} replies</p>
+        </div>
+        <hr class="my-5">
+        <div>
+            <form action="" method="POST" class="d-inline">{% csrf_token %}
+                <button class="btn btn-danger mx-2">Delete</button>
+            </form>
+            <a class="btn btn-secondary mx-2" href="{% url 'post-details' post.id %}">Cancel</a>
+        </div>
+    </div>
+    
+
+{% endblock content%}

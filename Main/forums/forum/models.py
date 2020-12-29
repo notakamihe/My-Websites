@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinLengthValidator
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.http import HttpRequest
 
 import datetime
 
@@ -28,7 +29,7 @@ class ForumUser (models.Model):
         ]
 
         return months[self.dob.month - 1]
-        
+
 
 class Profile (models.Model):
     forum_user = models.OneToOneField(ForumUser, on_delete=models.CASCADE)
@@ -47,11 +48,29 @@ class Profile (models.Model):
     def is_description_whitespace (self):
         return self.description.isspace()
 
+    @property
+    def post_count (self):
+        return ForumPost.objects.filter(profile=self).count()
+
 
 class ForumPost (models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=3000, validators=[MinLengthValidator(20)])
     date_posted = models.DateTimeField(auto_now_add=True)
-    comments = models.IntegerField(default=0, null=True, blank=True)
     upvotes = models.IntegerField(default=0, null=True, blank=True)
+
+    @property
+    def get_date_full (self):
+        return self.date_posted.strftime('%B %d, %Y')
+
+    @property
+    def num_replies (self):
+        return Reply.objects.filter(to=self).count()
+
+
+class Reply (models.Model):
+    to = models.ForeignKey(ForumPost, on_delete=models.SET_NULL, null=True)
+    replier = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
+    content = models.CharField(max_length=2000, validators=[MinLengthValidator(10)])
+    date_replied = models.DateTimeField(auto_now_add=True)

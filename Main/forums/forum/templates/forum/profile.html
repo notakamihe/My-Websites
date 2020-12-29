@@ -28,30 +28,79 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
+        .profile-forum-posts::-webkit-scrollbar {
+            width: 0.2rem;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        }
+
+        .profile-forum-posts::-webkit-scrollbar-thumb {
+            margin-top: 10rem;
+            margin-bottom: 10rem;
+            border-radius: 0.5rem;
+            background-color: blue;
+        }
+
+        .forum-post-desc {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     </style>
 
     <h1 class="mb-5">Profile for {{ profile.forum_user.user.username }} </h1>
 
-    <div style="background-color: #ffffff33;" class="col-5 p-5 rounded">
-        <div class="profile-img-outline">
-            <div class="profile-img-container"></div>
+    <div class="d-flex justify-content-center mx-5">
+        <div style="background-color: #ffffff33;" class="col-5 p-5 rounded">
+            <div class="profile-img-outline">
+                <div class="profile-img-container"></div>
+            </div>
+
+            <h2 style="word-spacing: 0.5rem;" class="mx-auto text-center mt-5"> {{ profile.forum_user.full_name }} </h2>
+            <p class="mx-auto text-center my-1">Joined {{ profile.date_joined }} </p>
+            <p class="mx-auto text-center my-1">Located at: {{ profile.forum_user.location }} </p>
+            <p class="mx-auto text-center my-1">Born in: {{ profile.forum_user.dob_month}} </p>
+
+            {% if profile.description != None and profile.description and not profile.is_description_whitespace %}
+                <p class="text-center mt-5"> {{ profile.description }} </p>
+            {% else %}
+                <p class="mx-auto text-center mt-5"><strong>[ No description for {{ profile.forum_user.user.username }} ]</strong></p>
+            {% endif %}
+
+            {% if is_authorized %}
+                <div class="mx-auto text-center mt-5">
+                    <a class="btn btn-success text-center mx-2" href="{% url 'profile-update' profile.forum_user.id %}">Edit</a>
+                    <a class="btn btn-danger text-center mx-2" href="{% url 'profile-delete' profile.forum_user.id %}">Delete</a>
+                    <form action="" class="d-inline text-center mx-2" method="POST">{% csrf_token %}
+                        <button class="btn btn-secondary" type="submit">Log out</button>
+                    </form>
+                </div>
+            {% endif %}
         </div>
 
-        <h2 style="word-spacing: 0.5rem;" class="mx-auto text-center mt-5"> {{ profile.forum_user.full_name }} </h2>
-        <p class="mx-auto text-center my-1">Joined {{ profile.date_joined }} </p>
-        <p class="mx-auto text-center my-1">Located at: {{ profile.forum_user.location }} </p>
-        <p class="mx-auto text-center my-1">Born in: {{ profile.forum_user.dob_month}} </p>
-
-        {% if profile.description != None and profile.description and not profile.is_description_whitespace %}
-            <p class="text-center mt-5"> {{ profile.description }} </p>
-        {% else %}
-            <p class="mx-auto text-center mt-5"><strong>[ No description for {{ profile.forum_user.user.username }} ]</strong></p>
-        {% endif %}
-
-        <div class="mx-auto text-center mt-5">
-            <a class="btn btn-success text-center mx-2" href="{% url 'profile-update' profile.forum_user.id %}">Edit</a>
-            <a class="btn btn-danger text-center mx-2" href="{% url 'profile-delete' profile.forum_user.id %}">Delete</a>
+        <div class="col-5 mx-5">
+            {% if is_authorized %}
+                <a href="{% url 'create' %}" class="d-block btn btn-primary mb-4">Add a post</a>
+            {% endif %}
+            <p class="text-center">{{ profile.post_count }} post(s)</p>
+            <div style="height: 35rem; overflow-y: scroll;" class="mt-3 p-2 profile-forum-posts">
+                {% for post in posts %}
+                    <a style="text-decoration: none;" class="d-block p-3 pt-4 rounded bg-transparent border mb-4" 
+                    href="{% url 'post-details' post.id %}">
+                        <h2 class="mb-4" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ post.title }}</h2>
+                        <p class="px-3 forum-post-desc">{{ post.description }}</p>
+                        <div style="width: 100%; justify-content: space-evenly;" class="px-3 mt-4 d-flex">
+                            <p><small><strong>{{ post.upvotes }}</strong> upvotes</small></p>
+                            <p><small><strong>{{ post.upvotes }}</strong> replies</small></p>
+                            <p><small><strong>{{ post.get_date_full }}</strong></small></p>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
         </div>
+        
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>

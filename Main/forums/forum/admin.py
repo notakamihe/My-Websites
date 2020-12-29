@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(ForumUser)
 admin.site.register(Profile)
 admin.site.register(ForumPost)
+admin.site.register(Reply)

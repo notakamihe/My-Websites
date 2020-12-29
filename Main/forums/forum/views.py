@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 
 import json
 import requests
@@ -13,18 +15,17 @@ def home_view (request):
 
 
 def register_view (request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
     if request.method == 'POST':
         form = ForumUserForm(request.POST)
         user = CreateUserForm(request.POST)
 
         if user.is_valid():
-            username = user.cleaned_data.get('username')
-            password = user.cleaned_data.get('password1')
-
-            new_user = User(username=username.lower(), password=password)
-            new_user.save()
-
             if form.is_valid():
+                new_user = user.save()
+
                 new_form = form.save(commit=False)
                 new_form.user = new_user
                 new_form.save()
@@ -32,6 +33,7 @@ def register_view (request):
                 new_profile = Profile(forum_user=new_form)
                 new_profile.save()
 
+                login(request, new_user)
                 return redirect('profile', forum_user_id=new_form.id)
     else:
         form = ForumUserForm()
@@ -41,26 +43,75 @@ def register_view (request):
 
 
 def login_view (request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            forum_user = ForumUser.objects.get(user=user)
+            return redirect('profile', forum_user_id=forum_user.id)
+        else:
+            messages.info(request, 'Invalid username or password')
+            return redirect('login')
+
+
     return render(request, 'forum/login.html', {})
 
 
 def create_view (request):
-    return render(request, 'forum/create.html', {})
+    if not request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = ForumPostForm(request.POST)
+
+        if form.is_valid():
+            forum_user = ForumUser.objects.get(user=request.user)
+            profile = Profile.objects.get(forum_user=forum_user)
+
+            new_post = form.save(commit=False)
+            new_post.profile = profile
+            new_post.save()
+
+            return redirect('profile', forum_user_id=forum_user.id)
+    else:
+        form = ForumPostForm()
+
+    return render(request, 'forum/create.html', { 'form': form })
 
 
 def profile_details_view (request, forum_user_id):
     if forum_user_id in [obj.id for obj in ForumUser.objects.all()]:
         profile = Profile.objects.get(forum_user=ForumUser.objects.get(id=forum_user_id))
+        posts_by_profile = reversed(ForumPost.objects.filter(profile=profile))
+
+        if request.method == 'POST':
+            logout(request)
+            return redirect('home')
     else:
         raise Http404
 
-    return render(request, 'forum/profile.html', { 'profile': profile })
+    return render(request, 'forum/profile.html', { 
+        'profile': profile,
+        'is_authorized': request.user == profile.forum_user.user,
+        'posts': posts_by_profile
+    })
 
 
 def profile_update_view (request, forum_user_id):
     if forum_user_id in [obj.id for obj in ForumUser.objects.all()]:
         profile = Profile.objects.get(forum_user=ForumUser.objects.get(id=forum_user_id))
 
+        if not request.user.is_superuser:
+            if not request.user.is_authenticated or request.user != profile.forum_user.user:
+                return HttpResponseForbidden()
+        
         if request.method == 'POST':
             if (request.FILES):
                 profile.picture = request.FILES['profile-img-input']
@@ -96,6 +147,10 @@ def profile_delete_view (request, forum_user_id):
     if forum_user_id in [obj.id for obj in ForumUser.objects.all()]:
         profile = Profile.objects.get(forum_user=ForumUser.objects.get(id=forum_user_id))
 
+        if not request.user.is_superuser:
+            if not request.user.is_authenticated or request.user != profile.forum_user.user:
+                return HttpResponseForbidden()
+
         if request.method == 'POST':
             profile.forum_user.user.delete()
             return redirect('account-deleted')
@@ -106,8 +161,105 @@ def profile_delete_view (request, forum_user_id):
 
 
 def post_list_view (request):
-    return render(request, 'forum/posts.html', {})
+    posts = reversed(ForumPost.objects.all())
+    return render(request, 'forum/posts.html', { 'posts': posts})
 
 
-def post_details_view (request):
-    return render(request, 'forum/post_details.html', {})
+def post_details_view (request, post_id):
+    if post_id in [post.id for post in ForumPost.objects.all()]:
+        post = ForumPost.objects.get(id=post_id)
+        replies = Reply.objects.filter(to=post)
+
+        if request.method == 'POST':
+            reply_form = ReplyFrom(request.POST)
+
+            if request.is_ajax():
+                _id = request.POST.get('id')
+                reply = Reply.objects.get(id=_id)
+
+                try:
+                    content = request.POST.get('reply-content')
+                    reply.content = content
+                    reply.save()
+                except:
+                    reply.delete()
+
+                return render(request, 'forum/post_details.html', { 
+                    'post': post, 
+                    'is_logged_in' : request.user.is_authenticated,
+                    'is_authorized': request.user == post.profile.forum_user.user,
+                    'reply_form': reply_form,
+                    'replies': replies, 
+                    'req_user': request.user
+                })
+
+
+            if reply_form.is_valid():
+                reply = reply_form.save(commit=False)
+                reply.to = post
+
+                forum_user = ForumUser.objects.get(user=request.user)
+                profile = Profile.objects.get(forum_user=forum_user)
+
+                reply.replier = profile
+                
+                reply.save()
+                post.save()
+
+                return redirect('post-details', post_id=post.id)
+                
+            
+        else:
+            reply_form = ReplyFrom()
+        
+    else:
+        raise Http404
+
+    return render(request, 'forum/post_details.html', { 
+        'post': post, 
+        'is_logged_in' : request.user.is_authenticated,
+        'is_authorized': request.user == post.profile.forum_user.user,
+        'reply_form': reply_form,
+        'replies': replies, 
+        'req_user': request.user
+    })
+
+
+def post_update_view (request, post_id):
+    if post_id in [post.id for post in ForumPost.objects.all()]:
+        post = ForumPost.objects.get(id=post_id)
+
+        if not request.user.is_superuser:
+            if not request.user.is_authenticated or request.user != post.profile.forum_user.user:
+                return HttpResponseForbidden()
+
+        if request.method == 'POST':
+            title = request.POST.get('title')
+            description = request.POST.get('description')
+
+            post.title = title
+            post.description = description
+            post.save()
+
+            return redirect('post-details', post_id=post.id)
+    else:
+        raise Http404
+
+    return render(request, 'forum/post-update.html', { 'post': post })
+
+
+def post_delete_view (request, post_id):
+    if post_id in [post.id for post in ForumPost.objects.all()]:
+        post = ForumPost.objects.get(id=post_id)
+
+        if not request.user.is_superuser:
+            if not request.user.is_authenticated or request.user != post.profile.forum_user.user:
+                return HttpResponseForbidden()
+
+        if request.method == 'POST':
+            post.delete()
+            return redirect('profile', post.profile.forum_user.id)
+    else:
+        raise Http404
+
+    return render(request, 'forum/post-delete.html', { 'post': post })
