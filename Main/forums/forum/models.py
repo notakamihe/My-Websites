@@ -68,9 +68,19 @@ class ForumPost (models.Model):
     def num_replies (self):
         return Reply.objects.filter(to=self).count()
 
+    @property
+    def standing (self):
+        votes = Vote.objects.filter(post=self)
+        return votes.filter(is_positive=True).count() - votes.filter(is_positive=False).count()
 
 class Reply (models.Model):
     to = models.ForeignKey(ForumPost, on_delete=models.SET_NULL, null=True)
     replier = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True)
     content = models.CharField(max_length=2000, validators=[MinLengthValidator(10)])
     date_replied = models.DateTimeField(auto_now_add=True)
+
+
+class Vote (models.Model):
+    post = models.ForeignKey(ForumPost, on_delete=models.CASCADE, null=True)
+    voter = models.ForeignKey(Profile, on_delete=models.CASCADE, null=True)
+    is_positive = models.BooleanField()

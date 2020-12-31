@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden, JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
@@ -161,8 +161,8 @@ def profile_delete_view (request, forum_user_id):
 
 
 def post_list_view (request):
-    posts = reversed(ForumPost.objects.all())
-    return render(request, 'forum/posts.html', { 'posts': posts})
+    posts = list(ForumPost.objects.all())[::-1]
+    return render(request, 'forum/posts.html', { 'posts': posts })
 
 
 def post_details_view (request, post_id):
@@ -187,7 +187,7 @@ def post_details_view (request, post_id):
                 return render(request, 'forum/post_details.html', { 
                     'post': post, 
                     'is_logged_in' : request.user.is_authenticated,
-                    'is_authorized': request.user == post.profile.forum_user.user,
+                    'is_authorized': request.user == post.profile.forum_user.user if post.profile else False,
                     'reply_form': reply_form,
                     'replies': replies, 
                     'req_user': request.user
@@ -206,7 +206,7 @@ def post_details_view (request, post_id):
                 reply.save()
                 post.save()
 
-                return redirect('post-details', post_id=post.id)
+            return redirect('post-details', post_id=post.id)
                 
             
         else:
@@ -218,7 +218,7 @@ def post_details_view (request, post_id):
     return render(request, 'forum/post_details.html', { 
         'post': post, 
         'is_logged_in' : request.user.is_authenticated,
-        'is_authorized': request.user == post.profile.forum_user.user,
+        'is_authorized': request.user == post.profile.forum_user.user if post.profile else False,
         'reply_form': reply_form,
         'replies': replies, 
         'req_user': request.user
@@ -263,3 +263,34 @@ def post_delete_view (request, post_id):
         raise Http404
 
     return render(request, 'forum/post-delete.html', { 'post': post })
+
+
+def post_vote (request, post_id):
+    if post_id in [post.id for post in ForumPost.objects.all()]:
+        post = ForumPost.objects.get(id=post_id)
+
+        if request.method == 'POST' and request.user != post.profile.forum_user.user and request.user.is_authenticated:
+            is_pos = request.POST.get('is_positive') == 'true'
+
+
+            if (request.user in [ vote.voter.forum_user.user for vote in Vote.objects.all() ]):
+                profile = list(filter(lambda p: p.forum_user.user == request.user, Profile.objects.all()))[0]
+                vote = Vote.objects.get(voter=profile)
+
+                if vote.is_positive == is_pos:
+                    vote.delete()
+                else:
+                    vote.is_positive = is_pos
+                    vote.save()
+            else:
+                profile = list(filter(lambda p: p.forum_user.user == request.user, Profile.objects.all()))[0]
+                vote = Vote.objects.create(post=post, is_positive=is_pos, voter=profile)
+                vote.save()
+                
+            return JsonResponse({ "standing": post.standing })
+
+            
+    else:
+        raise Http404
+
+    return JsonResponse({})

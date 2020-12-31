@@ -30,6 +30,7 @@ urlpatterns = [
     path('posts/<int:post_id>', post_details_view, name='post-details'),
     path('posts/<int:post_id>/update', post_update_view, name='post-update'),
     path('posts/<int:post_id>/delete', post_delete_view, name='post-delete'),
+    path('posts/<int:post_id>/vote', post_vote, name='post-vote'),
     path('profiles/<int:forum_user_id>', profile_details_view, name='profile'),
     path('profiles/<int:forum_user_id>/update', profile_update_view, name='profile-update'),
     path('profiles/<int:forum_user_id>/delete', profile_delete_view, name='profile-delete'),

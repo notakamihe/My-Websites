@@ -21,12 +21,26 @@
             background-repeat: no-repeat;
         }
 
-        .upvote-triangle {
+        .upvote-triangle:focus {
+            outline: none;
+            border: none;
+        }
+
+        .upvote-triangle img {
             width: 0.75rem;
+        }
+
+        .upvote-triangle:focus img {
+            width: 1rem;
         }
 
         .upvote-triangle:first-of-type {
             transform: scaleX(-1);
+        }
+
+        .upvote-triangle:active {
+            
+
         }
     </style>
 
@@ -37,11 +51,25 @@
             <div style="background-image: url('{{ post.profile.picture_url }}');"
             class="rounded-circle border post-profile-pic-container"></div>
             <span class="mx-4">&bullet;</span>
-            <a href="{% url 'profile' post.profile.forum_user.id %}"><strong style="font-size: 1.5rem;">{{ post.profile.forum_user.user.username }}</strong></a>
+            {% if post.profile %}
+                <a href="{% url 'profile' post.profile.forum_user.id %}">
+                    <strong style="font-size: 1.5rem;">{{ post.profile.forum_user.user.username }}</strong>
+                </a>
+            {% else %}
+                <strong>Deleted User</strong>
+            {% endif %}
             <div style="margin-left: auto; display: flex; align-items: center;">
-                <img src="{% static 'images/triangle.png' %}" alt="" class="upvote-triangle">
-                <span style="font-size: 2rem;" class="mx-4">{{ post.upvotes }}</span>
-                <img src="{% static 'images/triangle.png' %}" alt="" class="upvote-triangle">
+                {% if is_logged_in %}
+                    <button style="background-color: transparent; border: none;" id="downvote" class="upvote-triangle">
+                        <img src="{% static 'images/triangle.png' %}"  >
+                    </button>
+                {% endif %}
+                <strong style="font-size: 2rem;" class="mx-4" id="standing">{{ post.standing }}</strong>
+                {% if is_logged_in %}
+                    <button style="background-color: transparent; border: none;" id="upvote" class="upvote-triangle">
+                        <img src="{% static 'images/triangle.png' %}">
+                    </button>
+                {% endif %}
             </div>
         </div>
         <p style="font-size: larger;" class="px-5 muted mb-5">{{ post.description }}</p>
@@ -78,7 +106,13 @@
                     <a href="{% url 'profile' reply.replier.forum_user.id %}" style="margin-left: 2rem;"><strong style="font-size: 1.25rem;">{{ reply.replier.forum_user.user.username }}</strong></a>
                     <input type="text" name="id" value="{{ reply.id }}" class="d-none">
                     <span class="mx-4">&bullet;</span>
-                    <a href="{% url 'profile' post.profile.forum_user.id %}"><strong style="font-size: 1.25rem;">{{ reply.to.profile.forum_user.user.username }}</strong></a>
+                    {% if reply.to.profile %}
+                        <a href="{% url 'profile' post.profile.forum_user.id %}">
+                            <strong style="font-size: 1.25rem;">{{ reply.to.profile.forum_user.user.username }}</strong>
+                        </a>
+                    {% else %}
+                        <strong>Deleted User</strong>
+                    {% endif %}
                     <div style="background-image: url('{{ reply.to.profile.picture_url }}'); margin-left: 2rem;"
                     class="rounded-circle border reply-profile-pic-container"></div>
                 </div>
@@ -102,6 +136,17 @@
     <script>
         $(document).ready(() => {
             var contentVar;
+            var standingContent;
+
+            setInterval(() => {
+                if (parseInt($("#standing").html()) > 0) {
+                    $("#standing").css('color', '#00ff00')
+                } else if (parseInt($("#standing").html()) < 0) {
+                    $("#standing").css('color', '#ff0000')
+                } else {
+                    $("#standing").css('color', '#ffffff')
+                }
+            }, 1)
 
             $("#reply").click( () => {
                 $('#reply-form').show()
@@ -139,6 +184,42 @@
                 } else {
                     content.replaceWith(`<textarea style="margin-left: 3rem" class="bg-transparent border mb-4 col-9 rounded edit-reply-content" name="reply-content">${content.html()}</textarea>`)
                 }
+            })
+
+            $('#downvote').on('click', (e) => {
+                e.preventDefault()
+                is_pos = false;
+
+                $.ajax({
+                    type: 'POST',
+                    url: window.location + '/vote',
+                    data: {
+                        is_positive: is_pos,
+                        csrfmiddlewaretoken: '{{csrf_token}}'
+                    },
+                    dataType: 'json',
+                    success: (res) => {
+                        $('#standing').html(res.standing)
+                    }
+                })
+            })
+
+            $('#upvote').on('click', (e) => {
+                e.preventDefault()
+                is_pos = true
+
+                $.ajax({
+                    type: 'POST',
+                    url: window.location + '/vote',
+                    data: {
+                        is_positive: is_pos,
+                        csrfmiddlewaretoken: '{{csrf_token}}'
+                    },
+                    dataType: 'json',
+                    success: (res) => {
+                        $('#standing').html(res.standing)
+                    }
+                })
             })
         })
         
